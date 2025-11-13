@@ -13,7 +13,7 @@ class Graph
 public:
     Graph() : vertexCount(0), edgeCount(0) {}
 
-    void genAdjMatrix(int vCount, double probability = 0.4, bool isOriented = false, bool isWeighted = true)
+    void genAdjMatrix(int vCount, double probability, bool isOriented, bool isWeighted)
     {
         matrix.assign(vCount, vector<int>(vCount, 0));
         adjList.assign(vCount, {});
@@ -28,7 +28,7 @@ public:
 
         for (int i = 0; i < vertexCount; i++)
         {
-            for (int j = (isOriented ? 0 : i + 1); j < vertexCount; j++)
+            for (int j = (isOriented ? i + 1 : 0); j < vertexCount; j++)
             {
                 if (i == j) continue;
                 if (dist(gen) < probability)
@@ -36,7 +36,7 @@ public:
                     int w = isWeighted ? dist_int(gen) : 1;
 
                     matrix[i][j] = w;
-                    if (!isOriented)
+                    if (isOriented)
                         matrix[j][i] = w;
 
                     ++edgeCount;
@@ -338,7 +338,7 @@ int main(int argc, char* argv[])
 
     int vertices = 0, start = 0;
     double probability = 0.4;
-    bool oriented = false;
+    bool oriented = false; // по умолчанию ориентированный
     bool weighted = true; // по умолчанию взвешенный
 
     for (int i = 1; i < argc; i++)
@@ -358,7 +358,7 @@ int main(int argc, char* argv[])
     goto_start:
     cout << "Введите вершину для старта:";
     cin >> start;
-    if (start > vertices || start < 0) goto goto_start;
+    if (start > vertices - 1 || start < 0) goto goto_start;
 
         gp.DFS(start, true);
         gp.DFS_true(start, true);
